@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server";
 import { registrationSchema } from "@/lib/registration-schema";
+import { db } from "@/lib/db";
+import { registrations } from "@/lib/db/schema";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
-  if (!webhookUrl) {
-    console.error("GOOGLE_SHEETS_WEBHOOK_URL is not set");
-    return NextResponse.json(
-      { error: "Registration is not configured. Please contact the club." },
-      { status: 500 },
-    );
-  }
-
   let body: unknown;
   try {
     body = await request.json();
@@ -28,39 +21,34 @@ export async function POST(request: Request) {
     );
   }
 
-  const row = {
-    ...parsed.data,
-    submittedAt: new Date().toISOString(),
-    token: process.env.GOOGLE_SHEETS_SHARED_SECRET ?? "",
-  };
+  const { name, email, phone, branch, registrationNumber } = parsed.data;
 
   try {
-    const res = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(row),
-      // Apps Script web apps 302-redirect to googleusercontent.com; fetch follows it.
-      redirect: "follow",
-    });
+    const inserted = await db
+      .insert(registrations)
+      .values({
+        name,
+        email: email.toLowerCase(),
+        phone,
+        branch,
+        registrationNumber: registrationNumber.toUpperCase(),
+      })
+      // A double-tap or client retry can't create duplicates: email and
+      // registration_number are both unique.
+      .onConflictDoNothing()
+      .returning({ id: registrations.id });
 
-    // Apps Script web apps always respond 200; the real status is in the body.
-    const text = await res.text();
-    let result: { ok?: boolean; error?: string } | null = null;
-    try {
-      result = JSON.parse(text);
-    } catch {
-      /* fall through to the failure below */
-    }
-
-    if (!res.ok || !result?.ok) {
-      console.error("Apps Script webhook failed", res.status, text);
+    if (inserted.length === 0) {
       return NextResponse.json(
-        { error: "Could not save your registration. Please try again." },
-        { status: 502 },
+        {
+          error:
+            "This email or registration number is already registered. If that wasn't you, contact the club.",
+        },
+        { status: 409 },
       );
     }
   } catch (err) {
-    console.error("Apps Script webhook error", err);
+    console.error("Registration insert failed", err);
     return NextResponse.json(
       { error: "Could not save your registration. Please try again." },
       { status: 502 },
