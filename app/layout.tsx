@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Space_Mono } from "next/font/google";
 
@@ -16,9 +16,9 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IIC Rocketry Club - Induction Quiz",
+  title: "Idea Innovation Cell - Orientation",
   description:
-    "Innovation & Incubation Club - Rocketry Division. Join us and launch your career to new heights.",
+    "Idea Innovation Cell. Join us and turn bold ideas into reality.",
 };
 
 export const viewport: Viewport = {

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react"
+import React from "react";
 
 import { Navbar } from "@/components/navbar";
 import { Starfield } from "@/components/starfield";
@@ -79,8 +79,7 @@ const domains: DomainData[] = [
       },
       {
         name: "Content Writing",
-        description:
-          "Blogs, reports, social media content, and documentation.",
+        description: "Blogs, reports, social media content, and documentation.",
       },
     ],
   },
@@ -204,10 +203,10 @@ export default function DashboardPage() {
                     IIC Rocketry Club
                   </h2>
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    The Innovation & Incubation Club is a student-driven rocketry
-                    organization focused on building, launching, and innovating
-                    across multiple engineering domains. From propulsion to AI,
-                    we push boundaries.
+                    The Innovation & Incubation Club is a student-driven
+                    rocketry organization focused on building, launching, and
+                    innovating across multiple engineering domains. From
+                    propulsion to AI, we push boundaries.
                   </p>
                 </div>
               </div>

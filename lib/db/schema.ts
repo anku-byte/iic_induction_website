@@ -1,7 +1,4 @@
 import { pgTable, uuid, text, timestamp, index } from "drizzle-orm/pg-core";
-import { BRANCHES } from "@/lib/registration-schema";
-
-export const branchEnum = BRANCHES;
 
 export const registrations = pgTable(
   "registrations",
