@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   registrationSchema,
   type RegistrationFormData,
-  DOMAINS,
   BRANCHES,
 } from "@/lib/registration-schema";
 import {
@@ -31,6 +30,7 @@ import { useRouter } from "next/navigation";
 
 export function RegistrationForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm<RegistrationFormData>({
@@ -43,7 +43,27 @@ export function RegistrationForm() {
     },
   });
 
-  function onSubmit(data: RegistrationFormData) {
+  async function onSubmit(data: RegistrationFormData) {
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => null);
+        setSubmitError(
+          payload?.error ?? "Something went wrong. Please try again.",
+        );
+        return;
+      }
+    } catch {
+      setSubmitError("Network error. Please check your connection and try again.");
+      return;
+    }
+
     // Store in localStorage so dashboard/profile can read it
     localStorage.setItem("iic_registration", JSON.stringify(data));
     setIsSubmitted(true);
@@ -204,69 +224,19 @@ export function RegistrationForm() {
             />
           </div>
 
-          {/* Primary & Secondary Domain */}
-          <div className="grid gap-5 sm:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="primaryDomain"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs tracking-wider uppercase text-muted-foreground">
-                    Primary Domain
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="border-border bg-secondary/30 text-foreground focus:ring-foreground/20">
-                        <SelectValue placeholder="Select primary domain" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="border-border bg-popover">
-                      {DOMAINS.map((domain) => (
-                        <SelectItem key={domain} value={domain}>
-                          {domain}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="secondaryDomain"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs tracking-wider uppercase text-muted-foreground">
-                    Secondary Domain
-                  </FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="border-border bg-secondary/30 text-foreground focus:ring-foreground/20">
-                        <SelectValue placeholder="Select secondary domain" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="border-border bg-popover">
-                      {DOMAINS.map((domain) => (
-                        <SelectItem key={domain} value={domain}>
-                          {domain}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          {submitError && (
+            <p className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {submitError}
+            </p>
+          )}
 
           <Button
             type="submit"
+            disabled={form.formState.isSubmitting}
             className="mt-2 h-12 w-full font-bold tracking-widest uppercase"
           >
             <Rocket className="h-4 w-4" />
-            Register Now
+            {form.formState.isSubmitting ? "Registering..." : "Register Now"}
           </Button>
         </form>
       </Form>

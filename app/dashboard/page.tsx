@@ -16,7 +16,6 @@ import {
   Megaphone,
   Zap,
   Hash,
-  Target,
   ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
@@ -274,16 +273,6 @@ export default function DashboardPage() {
                         icon: Hash,
                         label: "Registration No.",
                         value: userData.registrationNumber,
-                      },
-                      {
-                        icon: Target,
-                        label: "Primary Domain",
-                        value: userData.primaryDomain,
-                      },
-                      {
-                        icon: Target,
-                        label: "Secondary Domain",
-                        value: userData.secondaryDomain,
                       },
                     ].map((field) => (
                       <div
