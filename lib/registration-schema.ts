@@ -1,15 +1,5 @@
 import { z } from "zod";
 
-export const BRANCHES = [
-  "Computer Science",
-  "Electronics",
-  "Mechanical",
-  "Chemical",
-  "Civil",
-  "Electrical",
-  "Information Technology",
-] as const;
-
 export const registrationSchema = z.object({
   name: z
     .string()
@@ -19,9 +9,10 @@ export const registrationSchema = z.object({
   phone: z
     .string()
     .regex(/^[6-9]\d{9}$/, "Please enter a valid 10-digit Indian phone number"),
-  branch: z.enum(BRANCHES, {
-    errorMap: () => ({ message: "Please select your branch" }),
-  }),
+  branch: z
+    .string()
+    .min(2, "Branch must be at least 2 characters")
+    .max(100, "Branch must be less than 100 characters"),
   registrationNumber: z
     .string()
     .min(3, "Registration number must be at least 3 characters")

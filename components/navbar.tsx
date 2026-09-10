@@ -8,8 +8,8 @@ import { useState } from "react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/dashboard", label: "Dashboard" },
   { href: "/register", label: "Register" },
+  { href: "/dashboard", label: "Dashboard" },
 ];
 
 export function Navbar() {
@@ -29,7 +29,7 @@ export function Navbar() {
               IIC
             </span>
             <span className="text-[10px] tracking-[0.2em] text-muted-foreground">
-              ROCKETRY CLUB
+              IDEA INNOVATION CELL
             </span>
           </div>
         </Link>
@@ -44,7 +44,7 @@ export function Navbar() {
                 "relative px-4 py-2 text-sm tracking-wide transition-colors rounded-md",
                 pathname === link.href
                   ? "text-foreground bg-secondary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
               )}
             >
               {link.label}
@@ -59,7 +59,11 @@ export function Navbar() {
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
         >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {mobileOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </div>
 
@@ -76,7 +80,7 @@ export function Navbar() {
                   "px-4 py-3 text-sm tracking-wide transition-colors rounded-md",
                   pathname === link.href
                     ? "text-foreground bg-secondary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
                 )}
               >
                 {link.label}

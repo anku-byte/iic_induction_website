@@ -1,8 +1,8 @@
 import { Navbar } from "@/components/navbar";
 import { Starfield } from "@/components/starfield";
-import { Countdown } from "@/components/countdown";
 import { RocketIllustration } from "@/components/rocket-illustration";
 import { Rocket } from "lucide-react";
+import Link from "next/link";
 
 export default function Page() {
   return (
@@ -17,20 +17,20 @@ export default function Page() {
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 backdrop-blur-sm">
             <Rocket className="h-3.5 w-3.5 text-muted-foreground" />
             <span className="text-xs font-medium tracking-widest uppercase text-muted-foreground">
-              Idea and Innovation Cell
+              Orientation 2026
             </span>
           </div>
 
           {/* Title */}
           <h1 className="text-balance mb-4 text-center text-4xl font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
-            IIC 
+            Idea Innovation Cell
           </h1>
           <p className="mb-2 text-center font-mono text-sm tracking-[0.3em] uppercase text-muted-foreground sm:text-base">
-            Induction Quiz 2026
+            Welcome Aboard
           </p>
           <p className="mb-12 max-w-md text-center text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Prepare for launch. The induction quiz opens on February 10th.
-            Are you ready to join the mission?
+            Join the Idea Innovation Cell and be a part of a community that
+            turns bold ideas into reality. Register now to get started.
           </p>
 
           {/* Rocket */}
@@ -38,12 +38,15 @@ export default function Page() {
             <RocketIllustration />
           </div>
 
-          {/* Countdown */}
+          {/* Register CTA */}
           <div>
-            <p className="mb-6 text-center text-xs font-medium tracking-[0.3em] uppercase text-muted-foreground">
-              Countdown to Launch
-            </p>
-            <Countdown />
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-3 rounded-lg border border-border bg-foreground px-8 py-4 text-sm font-bold uppercase tracking-widest text-background transition-colors hover:bg-foreground/90"
+            >
+              <Rocket className="h-4 w-4" />
+              Register Now
+            </Link>
           </div>
         </section>
 
@@ -53,11 +56,11 @@ export default function Page() {
             <div className="flex items-center gap-3">
               <Rocket className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
-                IIC 
+                Idea Innovation Cell
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Idea and Innovation Cell. All rights reserved.
+              Idea Innovation Cell. All rights reserved.
             </p>
           </div>
         </footer>
