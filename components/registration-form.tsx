@@ -38,20 +38,49 @@ export function RegistrationForm() {
   async function onSubmit(data: RegistrationFormData) {
     setSubmitError(null);
 
-    // Try saving to the server (non-blocking — registration works even if DB is down)
-    try {
-      await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-    } catch {
-      // Server unavailable — continue with local registration
+    // Under a registration rush the failures we actually see are transport
+    // hiccups, not rejections. Resubmitting the same details is idempotent on
+    // the server, so retry a couple of times before troubling the student.
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          // Only now is the club's copy safe -- localStorage alone is just this
+          // device, and the dashboard reading it would be a private fiction.
+          localStorage.setItem("iic_registration", JSON.stringify(data));
+          setIsSubmitted(true);
+          return;
+        }
+
+        // A 4xx is a settled answer (duplicate, or details we rejected).
+        // Retrying cannot change it, so surface what the server said.
+        if (res.status < 500) {
+          const payload = await res.json().catch(() => null);
+          setSubmitError(
+            payload?.error ??
+              "We couldn't accept this registration. Please check your details.",
+          );
+          return;
+        }
+      } catch {
+        // Network error -- falls through to the retry below.
+      }
+
+      if (attempt < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 400 * attempt));
+      }
     }
 
-    // Store in localStorage so dashboard/profile can read it
-    localStorage.setItem("iic_registration", JSON.stringify(data));
-    setIsSubmitted(true);
+    // Every attempt failed. Say so plainly rather than showing a success screen
+    // for a registration the club never received.
+    setSubmitError(
+      "We couldn't reach the club's servers, so your registration is NOT confirmed yet. Please check your connection and tap Register again.",
+    );
   }
 
   if (isSubmitted) {
